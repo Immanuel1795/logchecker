@@ -1,4 +1,4 @@
-body {
+body { 
   font-family: 'Segoe UI', sans-serif;
   background-color: #f9f9f9;
   margin: 0;
@@ -20,19 +20,21 @@ input[type="file"] {
   margin-bottom: 1.5rem;
 }
 
+/* Result/Error box - now using error (red/alert) scheme */
 .result-box {
-  background: #eef6fb;
-  border-left: 5px solid #007acc;
+  background: #fdf3f3;
+  border-left: 5px solid #d9534f;
   padding: 1rem;
   margin-bottom: 2rem;
   border-radius: 8px;
   white-space: pre-wrap;
 }
 
+/* Info box - now using info (blue) scheme */
 .info-box {
-  background: #f4f8f9;
+  background: #eef6fb;
   padding: 1rem;
-  border-left: 5px solid #5cb85c;
+  border-left: 5px solid #007acc;
   border-radius: 8px;
   margin-bottom: 1rem;
 }
