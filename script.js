@@ -132,15 +132,16 @@ document.getElementById('fileInput').addEventListener('change', function (event)
     if (details.length > 0) {
       detailsSection.style.display = 'block';
       table.style.display = 'table';
-      for (const row of details) {
+      details.forEach((row, index) => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td>${index + 1}</td>
           <td>${row.name}</td>
           <td>${row.table}</td>
           <td>${row.declaredRows}</td>
         `;
         tableBody.appendChild(tr);
-      }
+      });
     }
   };
 
