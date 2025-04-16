@@ -136,7 +136,7 @@ document.getElementById('fileInput').addEventListener('change', function (event)
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${index + 1}</td>
-          <td>${row.name}</td>
+          <td>${row.name.toLowerCase()}</td>
           <td>${row.table}</td>
           <td>${row.declaredRows}</td>
         `;
