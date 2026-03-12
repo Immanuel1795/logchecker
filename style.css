@@ -1,64 +1,103 @@
 body { 
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f9f9f9;
+  background-color: #f4f6f9;
   margin: 0;
   padding: 2rem;
   color: #333;
 }
 
+/* Container */
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: auto;
   background: #fff;
   padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-input[type="file"] {
-  display: block;
+/* Title */
+h1 {
+  text-align: center;
   margin-bottom: 1.5rem;
 }
 
-/* Result/Error box - now using error (red/alert) scheme */
+/* File Upload */
+input[type="file"] {
+  display: block;
+  margin-bottom: 1.5rem;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+/* Result / Error box */
 .result-box {
-  background: #fdf3f3;
-  border-left: 5px solid #d9534f;
+  background: #fff5f5;
+  border-left: 6px solid #d9534f;
   padding: 1rem;
   margin-bottom: 2rem;
   border-radius: 8px;
   white-space: pre-wrap;
+  font-weight: 500;
 }
 
-/* Info box - now using info (blue) scheme */
+/* Info box */
 .info-box {
   background: #eef6fb;
   padding: 1rem;
-  border-left: 5px solid #007acc;
+  border-left: 6px solid #007acc;
   border-radius: 8px;
   margin-bottom: 1rem;
 }
 
+/* Section title */
 h3 {
   margin-top: 2rem;
 }
 
+/* Table */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 0.5rem;
+  font-size: 14px;
 }
 
-table th, table td {
-  border: 1px solid #ddd;
-  padding: 0.75rem;
+table th,
+table td {
+  border: 1px solid #e2e2e2;
+  padding: 10px;
   text-align: left;
 }
 
 table th {
-  background-color: #f4f4f4;
+  background-color: #f4f6f9;
+  font-weight: 600;
 }
 
 table tr:nth-child(even) {
   background-color: #fafafa;
+}
+
+/* Hover effect */
+table tr:hover {
+  background-color: #f1f7ff;
+}
+
+/* Status styling */
+.status-ok {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.status-warning {
+  color: #f57c00;
+  font-weight: bold;
+}
+
+.status-error {
+  color: #c62828;
+  font-weight: bold;
 }
