@@ -45,9 +45,7 @@ document.getElementById('fileInput').addEventListener('change', function (event)
 
     renderResults(sections, issues);
 
-    if (exportDate) {
-      exportDateSpan.textContent = exportDate;
-    }
+    if (exportDate) exportDateSpan.textContent = exportDate;
 
     sessionSummarySpan.textContent =
       'Session processed (new logs do not contain explicit END message).';
@@ -57,7 +55,6 @@ document.getElementById('fileInput').addEventListener('change', function (event)
   reader.readAsText(file);
 
 });
-
 
 
 function extractDate(lines) {
@@ -131,6 +128,8 @@ function parseLog(lines) {
     if (endMatch && current) {
 
       current.completed = true;
+
+      // keep section but stop writing to it
       current = null;
 
     }
@@ -201,9 +200,7 @@ function renderResults(sections, issues) {
   if (issues.length === 0) {
 
     resultBox.classList.add('success');
-
-    output.textContent =
-      '✅ All sections completed correctly!';
+    output.textContent = '✅ All sections completed correctly!';
 
   } else {
 
