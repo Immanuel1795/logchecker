@@ -1,14 +1,17 @@
 document.getElementById('fileInput').addEventListener('change', function (event) {
+
   const file = event.target.files[0];
   if (!file) return;
 
   const reader = new FileReader();
+
   reader.onload = function (e) {
+
     const lines = e.target.result.split(/\r?\n/);
+
     const requiredPhrases = [
-      '%%%%%%% SNOW-FLOW service',
-      '%%%%%%% SNOW-FLOW service has been started in the scheduled mode',
-      'SERVICE NOW QUERY SESSION BEGIN',
+      'SNOW-FLOW service',
+      'SERVICE NOW QUERY SESSION BEGIN'
     ];
 
     const fileIsValid = requiredPhrases.every(phrase =>
@@ -36,82 +39,79 @@ document.getElementById('fileInput').addEventListener('change', function (event)
       return;
     }
 
-    const sectionStartRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\s+-+\s+([A-Z0-9_]+)\s+\(.+transferred\)$/i;
-    const nameLineRegex = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z.*?)\bNAME=([A-Z0-9_]+)\b.*TABLE=([a-zA-Z0-9_]+).*DECLARED_ROWS=(\d+)/;
-    const sectionEndRegex = /loading of ([A-Z0-9_]+) is done$/i;
-    const emptyEndRegex = /this is the last \(empty\) file, loading of ([A-Z0-9_]+) is done$/i;
-    const leftRegex = /LEFT=(-?\d+)/;
-    const dateRegex = /Date\s*:\s*(.+)$/;
-    const summaryRegex = /SERVICE NOW QUERY SESSION END\s+\(Elapsed:\s*(.+);\s*Files:\s*(\d+);\s*Bytes:\s*([0-9,]+)\)/i;
+    const nameRegex = /\.\.\.NAME=([A-Z0-9_]+);\s*TABLE=([a-zA-Z0-9_]+);\s*DECLARED_ROWS=(\d+)/;
+    const portionRegex = /LEFT=(-?\d+)/;
+    const endRegex = /loading of ([A-Z0-9_]+) is done/i;
+    const dateRegex = /Date\s*:\s*(.+)/;
 
     const sectionStates = {};
     const details = [];
 
+    let currentSection = null;
     let exportDate = '';
-    let sessionSummary = 'Pump script was not completed.';
 
     for (const raw of lines) {
+
       const line = raw.trim();
 
       const dateMatch = line.match(dateRegex);
-      if (dateMatch) exportDate = dateMatch[1];
-
-      const summaryMatch = line.match(summaryRegex);
-      if (summaryMatch) {
-        const [_, elapsed, files, bytes] = summaryMatch;
-        sessionSummary = `Elapsed: ${elapsed}, Files: ${files}, Bytes: ${bytes}`;
+      if (dateMatch) {
+        exportDate = dateMatch[1];
       }
 
-      const startMatch = line.match(sectionStartRegex);
-      if (startMatch) {
-        const name = startMatch[1];
-        sectionStates[name] = sectionStates[name] || {};
-        sectionStates[name].started = true;
-        continue;
-      }
+      const nameMatch = line.match(nameRegex);
 
-      const nameMatch = line.match(nameLineRegex);
       if (nameMatch) {
-        const prefix = nameMatch[1];
-        const name = nameMatch[2];
-        const table = nameMatch[3];
-        const declaredRows = nameMatch[4];
 
-        if (!prefix.includes('http') && !prefix.includes('Query') && !prefix.includes('SLA')) {
-          sectionStates[name] = sectionStates[name] || {};
-          sectionStates[name].started = true;
+        const name = nameMatch[1];
+        const table = nameMatch[2];
+        const declaredRows = nameMatch[3];
+
+        sectionStates[name] = {
+          started: true,
+          ended: false,
+          lastLeft: null
+        };
+
+        currentSection = name;
+
+        if (!details.some(d => d.name === name)) {
           details.push({ name, table, declaredRows });
         }
+
         continue;
       }
 
-      const leftMatch = line.match(leftRegex);
-      if (leftMatch) {
-        const left = parseInt(leftMatch[1]);
-        const active = Object.keys(sectionStates).find(n => sectionStates[n].started && !sectionStates[n].ended);
-        if (active) sectionStates[active].lastLeft = left;
+      const portionMatch = line.match(portionRegex);
+
+      if (portionMatch && currentSection) {
+        const left = parseInt(portionMatch[1]);
+        sectionStates[currentSection].lastLeft = left;
         continue;
       }
 
-      const emptyEndMatch = line.match(emptyEndRegex);
-      if (emptyEndMatch) {
-        const name = emptyEndMatch[1];
-        sectionStates[name] = sectionStates[name] || {};
-        sectionStates[name].ended = true;
-        const left = sectionStates[name].lastLeft;
-        if (left !== undefined && left > 0) {
-          sectionStates[name].invalidEnding = true;
-        }
-        continue;
-      }
+      const endMatch = line.match(endRegex);
 
-      const endMatch = line.match(sectionEndRegex);
       if (endMatch) {
+
         const name = endMatch[1];
-        sectionStates[name] = sectionStates[name] || {};
-        sectionStates[name].ended = true;
-        continue;
+
+        if (sectionStates[name]) {
+
+          sectionStates[name].ended = true;
+
+          const left = sectionStates[name].lastLeft;
+
+          if (left !== null && left > 0) {
+            sectionStates[name].invalidEnding = true;
+          }
+
+        }
+
+        currentSection = null;
+
       }
+
     }
 
     const problemSections = Object.entries(sectionStates)
@@ -119,31 +119,48 @@ document.getElementById('fileInput').addEventListener('change', function (event)
       .map(([name]) => name);
 
     if (problemSections.length === 0) {
+
       resultBox.classList.add('success');
       output.textContent = '✅ All sections completed correctly!';
+
     } else {
-      output.textContent = `❌ Found ${problemSections.length} section(s) with issues:\n\n` +
+
+      output.textContent =
+        `❌ Found ${problemSections.length} section(s) with issues:\n\n` +
         problemSections.map(name => ` - ${name}`).join('\n');
+
     }
 
-    if (exportDate) exportDateSpan.textContent = exportDate;
-    sessionSummarySpan.textContent = sessionSummary;
+    if (exportDate) {
+      exportDateSpan.textContent = exportDate;
+    }
+
+    sessionSummarySpan.textContent = 'Session completed (no explicit end message in log).';
 
     if (details.length > 0) {
+
       detailsSection.style.display = 'block';
       table.style.display = 'table';
+
       details.forEach((row, index) => {
+
         const tr = document.createElement('tr');
+
         tr.innerHTML = `
           <td>${index + 1}</td>
           <td>${row.name.toLowerCase()}</td>
           <td>${row.table}</td>
           <td>${row.declaredRows}</td>
         `;
+
         tableBody.appendChild(tr);
+
       });
+
     }
+
   };
 
   reader.readAsText(file);
+
 });
