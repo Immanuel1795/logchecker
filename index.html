@@ -6,39 +6,54 @@
   <title>ServiceNow Script Analyzer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
-  <div class="container">
-    <h1>ServiceNow Script Analyzer</h1>
 
-    <input type="file" id="fileInput" />
+<div class="container">
 
-    <div id="outputContainer">
-      <div id="resultBox" class="result-box" style="display: none;">
-        <pre id="output"></pre>
-      </div>
+<h1>ServiceNow Script Analyzer</h1>
 
-      <div id="detailsSection" style="display: none;">
-        <h3>More details</h3>
-        <div class="info-box">
-          <p><strong>Date:</strong> <span id="exportDate"></span></p>
-          <p><strong>Session Summary:</strong> <span id="sessionSummary"></span></p>
-        </div>
+<input type="file" id="fileInput" />
 
-        <table id="detailsTable">
-          <thead>
-            <tr>
-              <th>Sl. No</th>
-              <th>Blob Name</th>
-              <th>ServiceNow Table</th>
-              <th>Declared Rows</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
+<div id="outputContainer">
+
+  <div id="resultBox" class="result-box" style="display:none;">
+    <pre id="output"></pre>
   </div>
 
-  <script src="script.js"></script>
+  <div id="detailsSection" style="display:none;">
+
+    <h3>More details</h3>
+
+    <div class="info-box">
+      <p><strong>Date:</strong> <span id="exportDate"></span></p>
+      <p><strong>Session Summary:</strong> <span id="sessionSummary"></span></p>
+    </div>
+
+    <table id="detailsTable">
+
+      <thead>
+        <tr>
+          <th>Sl. No</th>
+          <th>Blob Name</th>
+          <th>ServiceNow Table</th>
+          <th>Declared Rows</th>
+          <th>Received Rows</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody></tbody>
+
+    </table>
+
+  </div>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
