@@ -40,7 +40,7 @@ document.getElementById('fileInput').addEventListener('change', function (event)
     }
 
     const nameRegex = /\.\.\.NAME=([A-Z0-9_]+);\s*TABLE=([a-zA-Z0-9_]+);\s*DECLARED_ROWS=(\d+)/;
-    const portionRegex = /LEFT=(-?\d+)/;
+    const portionRegex = /PORTION=\d+;\s*RECEIVED=\d+.*LEFT=(-?\d+)/;
     const endRegex = /loading of ([A-Z0-9_]+) is done/i;
     const dateRegex = /Date\s*:\s*(.+)/;
 
@@ -85,8 +85,10 @@ document.getElementById('fileInput').addEventListener('change', function (event)
       const portionMatch = line.match(portionRegex);
 
       if (portionMatch && currentSection) {
+
         const left = parseInt(portionMatch[1]);
         sectionStates[currentSection].lastLeft = left;
+
         continue;
       }
 
@@ -115,7 +117,17 @@ document.getElementById('fileInput').addEventListener('change', function (event)
     }
 
     const problemSections = Object.entries(sectionStates)
-      .filter(([_, state]) => state.started && (!state.ended || state.invalidEnding))
+      .filter(([_, state]) => {
+
+        if (!state.started) return false;
+
+        if (state.ended && !state.invalidEnding) return false;
+
+        if (!state.ended && state.lastLeft === 0) return false;
+
+        return true;
+
+      })
       .map(([name]) => name);
 
     if (problemSections.length === 0) {
