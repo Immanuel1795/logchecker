@@ -1,13 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SN Script Analyzer</title>
+<title>ServiceNow Script Analyzer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
+  <div class="container">
+    <h1>ServiceNow Script Analyzer</h1>
+
+    <input type="file" id="fileInput" />
+
+    <div id="outputContainer">
+      <div id="resultBox" class="result-box" style="display: none;">
+        <pre id="output"></pre>
+      </div>
+
+      <div id="detailsSection" style="display: none;">
+        <h3>More details</h3>
+        <div class="info-box">
+          <p><strong>Date:</strong> <span id="exportDate"></span></p>
+          <p><strong>Session Summary:</strong> <span id="sessionSummary"></span></p>
+        </div>
+
+        <table id="detailsTable">
+          <thead>
+            <tr>
+              <th>Sl. No</th>
+              <th>Blob Name</th>
+              <th>ServiceNow Table</th>
+              <th>Declared Rows</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
 <div class="container">
 
@@ -49,6 +73,7 @@
 
   </div>
 
+  <script src="script.js"></script>
 </div>
 
 </div>
